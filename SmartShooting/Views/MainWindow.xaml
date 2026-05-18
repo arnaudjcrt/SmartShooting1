@@ -1,0 +1,246 @@
+﻿<Window x:Class="SmartShooting.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Smart Shooting"
+        Height="720"
+        Width="1100"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B1020">
+
+    <Window.Resources>
+
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Background" Value="#7C3AED"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="28">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <Border Background="#111827"
+                CornerRadius="22"
+                Padding="20"
+                Margin="0,0,0,22">
+
+            <DockPanel>
+
+                <StackPanel>
+                    <TextBlock Text="SMART SHOOTING"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+
+                    <TextBlock Text="Jeu interactif Arduino • Distance en temps réel"
+                               FontSize="15"
+                               Foreground="#94A3B8"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Right"
+                            HorizontalAlignment="Right">
+
+                    <ComboBox x:Name="PortComboBox"
+                              Width="125"/>
+
+                    <Button Content="Actualiser"
+                            Background="#334155"
+                            Click="ActualiserPorts_Click"/>
+
+                    <Button x:Name="BoutonConnexion"
+                            Content="Connecter"
+                            Background="#16A34A"
+                            Click="Connexion_Click"/>
+
+                    <Button Content="Mode test"
+                            Background="#0EA5E9"
+                            Click="ModeTest_Click"/>
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- CONTENU -->
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- CARTE GAUCHE -->
+            <Border Background="#151B2E"
+                    CornerRadius="28"
+                    Padding="30"
+                    Margin="0,0,12,0">
+
+                <StackPanel>
+
+                    <TextBlock Text="Distance demandée"
+                               FontSize="20"
+                               Foreground="#94A3B8"/>
+
+                    <TextBlock x:Name="TexteDistanceDemandee"
+                               Text="-- m"
+                               FontSize="92"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Margin="0,5,0,20"/>
+
+                    <Border Background="#0F172A"
+                            CornerRadius="20"
+                            Padding="22"
+                            Margin="0,0,0,24">
+
+                        <StackPanel>
+                            <TextBlock Text="Distance actuelle"
+                                       FontSize="18"
+                                       Foreground="#94A3B8"/>
+
+                            <TextBlock x:Name="TexteDistanceActuelle"
+                                       Text="-- m"
+                                       FontSize="44"
+                                       FontWeight="Bold"
+                                       Foreground="White"/>
+
+                            <TextBlock x:Name="TexteDistanceArrondie"
+                                       Text="Arrondi : --"
+                                       FontSize="18"
+                                       Foreground="#CBD5E1"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ProgressBar x:Name="BarreDistance"
+                                 Height="18"
+                                 Minimum="0"
+                                 Maximum="10"
+                                 Margin="0,0,0,30"/>
+
+                    <Button Content="🎯 Nouvelle distance"
+                            Height="48"
+                            FontSize="15"
+                            Click="NouvelleDistance_Click"/>
+
+                    <Button Content="↻ Réinitialiser le score"
+                            Height="48"
+                            FontSize="15"
+                            Background="#475569"
+                            Click="ResetScore_Click"/>
+
+                </StackPanel>
+            </Border>
+
+            <!-- CARTE DROITE -->
+            <Border Grid.Column="1"
+                    Background="#151B2E"
+                    CornerRadius="28"
+                    Padding="30"
+                    Margin="12,0,0,0">
+
+                <StackPanel>
+
+                    <TextBlock Text="Indication"
+                               FontSize="20"
+                               Foreground="#94A3B8"/>
+
+                    <Border x:Name="BlocMessage"
+                            Background="#334155"
+                            CornerRadius="22"
+                            Padding="24"
+                            Margin="0,15,0,25">
+
+                        <TextBlock x:Name="TexteMessage"
+                                   Text="En attente..."
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   TextAlignment="Center"/>
+                    </Border>
+
+                    <TextBlock Text="Résultat du tir"
+                               FontSize="20"
+                               Foreground="#94A3B8"/>
+
+                    <Border x:Name="BlocResultat"
+                            Background="#0F172A"
+                            CornerRadius="22"
+                            Padding="24"
+                            Margin="0,15,0,25">
+
+                        <TextBlock x:Name="TexteResultat"
+                                   Text="--"
+                                   FontSize="42"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   TextAlignment="Center"/>
+                    </Border>
+
+                    <Grid Margin="0,0,0,25">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#0F172A"
+                                CornerRadius="18"
+                                Padding="18"
+                                Margin="0,0,8,0">
+
+                            <TextBlock x:Name="TexteScore"
+                                       Text="Score : 0"
+                                       FontSize="26"
+                                       FontWeight="Bold"
+                                       Foreground="White"/>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Background="#0F172A"
+                                CornerRadius="18"
+                                Padding="18"
+                                Margin="8,0,0,0">
+
+                            <TextBlock x:Name="TexteTirs"
+                                       Text="Tirs : 0"
+                                       FontSize="26"
+                                       FontWeight="Bold"
+                                       Foreground="White"/>
+                        </Border>
+                    </Grid>
+
+                    <TextBox x:Name="ZoneLogs"
+                             Height="145"
+                             Background="#020617"
+                             Foreground="#CBD5E1"
+                             BorderThickness="0"
+                             Padding="12"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
