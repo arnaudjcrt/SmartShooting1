@@ -14,7 +14,10 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer timerTest = new();
     private readonly Random hasard = new();
 
-    private double distanceSimulee = 3.0;
+    private double distanceSimulee = 150;
+    private bool lumiereDejaComptee = false;
+
+    
 
     public MainWindow()
     {
@@ -22,7 +25,7 @@ public partial class MainWindow : Window
 
         arduinoService.LigneRecue += ArduinoService_LigneRecue;
 
-        timerTest.Interval = TimeSpan.FromMilliseconds(300);
+        timerTest.Interval = TimeSpan.FromMilliseconds(500);
         timerTest.Tick += TimerTest_Tick;
 
         ActualiserPorts();
@@ -84,6 +87,7 @@ public partial class MainWindow : Window
     private void ResetScore_Click(object sender, RoutedEventArgs e)
     {
         gameService.ResetScore();
+        lumiereDejaComptee = false;
         MettreAJourAffichage();
         AjouterLog("Score réinitialisé");
     }
@@ -99,8 +103,9 @@ public partial class MainWindow : Window
     private void NouvelleDistance()
     {
         gameService.GenererNouvelleDistance();
+        lumiereDejaComptee = false;
         MettreAJourAffichage();
-        AjouterLog("Nouvelle distance : " + gameService.Etat.DistanceDemandee + " m");
+        AjouterLog("Nouvelle distance : " + gameService.Etat.DistanceDemandee + " cm");
     }
 
     private void ArduinoService_LigneRecue(string ligne)
@@ -113,27 +118,53 @@ public partial class MainWindow : Window
             {
                 string valeur = ligne.Replace("DIST:", "").Replace(",", ".");
 
-                if (double.TryParse(valeur, NumberStyles.Float, CultureInfo.InvariantCulture, out double distance))
+                if (valeur == "ERREUR")
                 {
-                    gameService.TraiterDistance(distance);
-                    MettreAJourAffichage();
+                    AjouterLog("Distance ignorée : erreur capteur");
+                }
+                else if (double.TryParse(valeur, NumberStyles.Float, CultureInfo.InvariantCulture, out double distance))
+                {
+                    if (distance > 2 && distance < 300)
+                    {
+                        gameService.TraiterDistance(distance);
+                    }
+                    else
+                    {
+                        AjouterLog("Distance ignorée : " + distance + " cm");
+                    }
                 }
             }
 
-            if (ligne.StartsWith("RESULT:"))
+            if (ligne.StartsWith("LIGHT:"))
             {
-                string resultat = ligne.Replace("RESULT:", "").Trim();
-                gameService.TraiterResultat(resultat);
-                MettreAJourAffichage();
+                string valeur = ligne.Replace("LIGHT:", "");
+
+                if (int.TryParse(valeur, out int luminosite))
+                {
+                    gameService.TraiterLuminosite(luminosite);
+
+                    if (luminosite <= 100 && !lumiereDejaComptee)
+                    {
+                        gameService.TraiterResultat("HIT");
+                        lumiereDejaComptee = true;
+                    }
+
+                    if (luminosite > 100)
+                    {
+                        lumiereDejaComptee = false;
+                    }
+                }
             }
+
+            MettreAJourAffichage();
         });
     }
 
     private void TimerTest_Tick(object? sender, EventArgs e)
     {
         distanceSimulee += (gameService.Etat.DistanceDemandee - distanceSimulee) * 0.15;
-        distanceSimulee += (hasard.NextDouble() - 0.5) * 0.4;
-        distanceSimulee = Math.Clamp(distanceSimulee, 0.5, 10);
+        distanceSimulee += (hasard.NextDouble() - 0.5) * 20;
+        distanceSimulee = Math.Clamp(distanceSimulee, 0, 300);
 
         gameService.TraiterDistance(distanceSimulee);
         MettreAJourAffichage();
@@ -143,11 +174,11 @@ public partial class MainWindow : Window
     {
         var etat = gameService.Etat;
 
-        TexteDistanceDemandee.Text = etat.DistanceDemandee + " m";
-        TexteDistanceActuelle.Text = etat.DistanceActuelle.ToString("0.00") + " m";
-        TexteDistanceArrondie.Text = "Arrondi : " + etat.DistanceArrondie + " m";
+        TexteDistanceDemandee.Text = etat.DistanceDemandee + " cm";
+        TexteDistanceActuelle.Text = etat.DistanceActuelle.ToString("0") + " cm";
+        TexteDistanceArrondie.Text = "Arrondi : " + etat.DistanceArrondie + " cm";
 
-        BarreDistance.Value = Math.Clamp(etat.DistanceActuelle, 0, 10);
+        BarreDistance.Value = Math.Clamp(etat.DistanceActuelle, 0, 300);
 
         TexteMessage.Text = etat.Message;
         TexteResultat.Text = etat.Resultat;

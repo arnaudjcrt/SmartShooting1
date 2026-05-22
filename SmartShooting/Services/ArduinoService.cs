@@ -22,20 +22,38 @@ public class ArduinoService
     {
         Deconnecter();
 
-        _portSerie = new SerialPort(nomPort, 9600);
-        _portSerie.NewLine = "\n";
+        _portSerie = new SerialPort(nomPort, 9600)
+        {
+            NewLine = "\n",
+            ReadTimeout = 1000,
+            DtrEnable = true,
+            RtsEnable = true
+        };
+
         _portSerie.DataReceived += PortSerie_DataReceived;
         _portSerie.Open();
+
+        Thread.Sleep(1500); // laisse le temps à l'Arduino de redémarrer
+        _portSerie.DiscardInBuffer();
     }
 
     public void Deconnecter()
     {
         if (_portSerie != null)
         {
-            if (_portSerie.IsOpen)
-                _portSerie.Close();
+            try
+            {
+                _portSerie.DataReceived -= PortSerie_DataReceived;
 
-            _portSerie.Dispose();
+                if (_portSerie.IsOpen)
+                    _portSerie.Close();
+
+                _portSerie.Dispose();
+            }
+            catch
+            {
+            }
+
             _portSerie = null;
         }
     }
@@ -44,8 +62,13 @@ public class ArduinoService
     {
         try
         {
-            string ligne = _portSerie!.ReadLine().Trim();
-            LigneRecue?.Invoke(ligne);
+            if (_portSerie == null || !_portSerie.IsOpen)
+                return;
+
+            string ligne = _portSerie.ReadLine().Trim();
+
+            if (!string.IsNullOrWhiteSpace(ligne))
+                LigneRecue?.Invoke(ligne);
         }
         catch
         {

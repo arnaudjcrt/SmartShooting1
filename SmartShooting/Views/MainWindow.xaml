@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Smart Shooting"
         Height="720"
-        Width="1100"
+        Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#0B1020">
 
@@ -11,9 +11,8 @@
 
         <Style TargetType="Button">
             <Setter Property="Height" Value="42"/>
-            <Setter Property="Padding" Value="18,8"/>
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="Background" Value="#7C3AED"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="4"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -22,9 +21,9 @@
 
         <Style TargetType="ComboBox">
             <Setter Property="Height" Value="42"/>
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="Padding" Value="10,4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
         </Style>
 
         <Style TargetType="TextBox">
@@ -42,49 +41,66 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Border Background="#111827"
+
+        <Border Grid.Row="0"
+                Background="#111827"
                 CornerRadius="22"
                 Padding="20"
-                Margin="0,0,0,22">
+                Margin="0,0,0,20">
 
-            <DockPanel>
+            <Grid>
 
-                <StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- TITRE -->
+
+                <StackPanel Grid.Column="0">
+
                     <TextBlock Text="SMART SHOOTING"
-                               FontSize="36"
+                               FontSize="34"
                                FontWeight="Bold"
                                Foreground="White"/>
 
-                    <TextBlock Text="Jeu interactif Arduino • Distance en temps réel"
+                    <TextBlock Text="Jeu interactif Arduino • Distance temps réel"
                                FontSize="15"
                                Foreground="#94A3B8"/>
+
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal"
-                            DockPanel.Dock="Right"
-                            HorizontalAlignment="Right">
+                <!-- BOUTONS -->
 
-                    <ComboBox x:Name="PortComboBox"
-                              Width="125"/>
+                <WrapPanel Grid.Column="1"
+                           VerticalAlignment="Center">
 
-                    <Button Content="Actualiser"
-                            Background="#334155"
-                            Click="ActualiserPorts_Click"/>
+                    <ComboBox x:Name="PortComboBox"/>
 
                     <Button x:Name="BoutonConnexion"
                             Content="Connecter"
+                            Width="120"
                             Background="#16A34A"
                             Click="Connexion_Click"/>
 
+                    <Button Content="Actualiser"
+                            Width="120"
+                            Background="#334155"
+                            Click="ActualiserPorts_Click"/>
+
                     <Button Content="Mode test"
+                            Width="120"
                             Background="#0EA5E9"
                             Click="ModeTest_Click"/>
-                </StackPanel>
 
-            </DockPanel>
+                </WrapPanel>
+
+            </Grid>
+
         </Border>
 
         <!-- CONTENU -->
+
         <Grid Grid.Row="1">
 
             <Grid.ColumnDefinitions>
@@ -92,11 +108,14 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <!-- CARTE GAUCHE -->
-            <Border Background="#151B2E"
-                    CornerRadius="28"
+
+            <!-- PARTIE GAUCHE -->
+
+            <Border Grid.Column="0"
+                    Background="#151B2E"
+                    CornerRadius="25"
                     Padding="30"
-                    Margin="0,0,12,0">
+                    Margin="0,0,10,0">
 
                 <StackPanel>
 
@@ -105,61 +124,70 @@
                                Foreground="#94A3B8"/>
 
                     <TextBlock x:Name="TexteDistanceDemandee"
-                               Text="-- m"
-                               FontSize="92"
+                               Text="0 cm"
+                               FontSize="90"
                                FontWeight="Bold"
                                Foreground="White"
-                               Margin="0,5,0,20"/>
+                               Margin="0,0,0,20"/>
+
 
                     <Border Background="#0F172A"
                             CornerRadius="20"
-                            Padding="22"
-                            Margin="0,0,0,24">
+                            Padding="20"
+                            Margin="0,0,0,25">
 
                         <StackPanel>
+
                             <TextBlock Text="Distance actuelle"
                                        FontSize="18"
                                        Foreground="#94A3B8"/>
 
                             <TextBlock x:Name="TexteDistanceActuelle"
-                                       Text="-- m"
+                                       Text="0 cm"
                                        FontSize="44"
                                        FontWeight="Bold"
                                        Foreground="White"/>
 
                             <TextBlock x:Name="TexteDistanceArrondie"
-                                       Text="Arrondi : --"
+                                       Text="Arrondi : 0 cm"
                                        FontSize="18"
                                        Foreground="#CBD5E1"/>
+
                         </StackPanel>
+
                     </Border>
 
                     <ProgressBar x:Name="BarreDistance"
-                                 Height="18"
+                                 Height="20"
                                  Minimum="0"
-                                 Maximum="10"
-                                 Margin="0,0,0,30"/>
+                                 Maximum="300"
+                                 Margin="0,0,0,25"/>
+
 
                     <Button Content="🎯 Nouvelle distance"
-                            Height="48"
+                            Height="50"
                             FontSize="15"
+                            Background="#7C3AED"
                             Click="NouvelleDistance_Click"/>
 
-                    <Button Content="↻ Réinitialiser le score"
-                            Height="48"
+                    <Button Content="↻ Réinitialiser score"
+                            Height="50"
                             FontSize="15"
                             Background="#475569"
                             Click="ResetScore_Click"/>
 
                 </StackPanel>
+
             </Border>
 
-            <!-- CARTE DROITE -->
+
+            <!-- PARTIE DROITE -->
+
             <Border Grid.Column="1"
                     Background="#151B2E"
-                    CornerRadius="28"
+                    CornerRadius="25"
                     Padding="30"
-                    Margin="12,0,0,0">
+                    Margin="10,0,0,0">
 
                 <StackPanel>
 
@@ -169,17 +197,19 @@
 
                     <Border x:Name="BlocMessage"
                             Background="#334155"
-                            CornerRadius="22"
-                            Padding="24"
-                            Margin="0,15,0,25">
+                            CornerRadius="20"
+                            Padding="20"
+                            Margin="0,10,0,20">
 
                         <TextBlock x:Name="TexteMessage"
                                    Text="En attente..."
-                                   FontSize="34"
+                                   FontSize="30"
                                    FontWeight="Bold"
                                    Foreground="White"
                                    TextAlignment="Center"/>
+
                     </Border>
+
 
                     <TextBlock Text="Résultat du tir"
                                FontSize="20"
@@ -187,60 +217,74 @@
 
                     <Border x:Name="BlocResultat"
                             Background="#0F172A"
-                            CornerRadius="22"
-                            Padding="24"
-                            Margin="0,15,0,25">
+                            CornerRadius="20"
+                            Padding="20"
+                            Margin="0,10,0,20">
 
                         <TextBlock x:Name="TexteResultat"
                                    Text="--"
-                                   FontSize="42"
+                                   FontSize="35"
                                    FontWeight="Bold"
                                    Foreground="White"
                                    TextAlignment="Center"/>
+
                     </Border>
 
-                    <Grid Margin="0,0,0,25">
+
+                    <Grid Margin="0,0,0,20">
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <Border Background="#0F172A"
-                                CornerRadius="18"
-                                Padding="18"
-                                Margin="0,0,8,0">
+                        <Border Grid.Column="0"
+                                Background="#0F172A"
+                                CornerRadius="15"
+                                Padding="15"
+                                Margin="0,0,5,0">
 
                             <TextBlock x:Name="TexteScore"
                                        Text="Score : 0"
-                                       FontSize="26"
+                                       FontSize="25"
                                        FontWeight="Bold"
                                        Foreground="White"/>
+
                         </Border>
+
 
                         <Border Grid.Column="1"
                                 Background="#0F172A"
-                                CornerRadius="18"
-                                Padding="18"
-                                Margin="8,0,0,0">
+                                CornerRadius="15"
+                                Padding="15"
+                                Margin="5,0,0,0">
 
                             <TextBlock x:Name="TexteTirs"
                                        Text="Tirs : 0"
-                                       FontSize="26"
+                                       FontSize="25"
                                        FontWeight="Bold"
                                        Foreground="White"/>
+
                         </Border>
+
                     </Grid>
 
+
                     <TextBox x:Name="ZoneLogs"
-                             Height="145"
+                             Height="160"
                              Background="#020617"
                              Foreground="#CBD5E1"
                              BorderThickness="0"
-                             Padding="12"
+                             Padding="10"
                              IsReadOnly="True"
                              VerticalScrollBarVisibility="Auto"/>
+
                 </StackPanel>
+
             </Border>
+
         </Grid>
+
     </Grid>
+
 </Window>

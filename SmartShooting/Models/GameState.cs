@@ -7,6 +7,8 @@ public class GameState
     public int DistanceArrondie { get; set; }
     public int Score { get; set; }
     public int Tirs { get; set; }
+    public int Luminosite { get; set; }
+
     public string Message { get; set; } = "En attente...";
     public string Resultat { get; set; } = "--";
 }

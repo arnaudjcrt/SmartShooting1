@@ -4,14 +4,15 @@ namespace SmartShooting.Services;
 
 public class GameService
 {
-    private readonly Random _random = new();
-    private const double Tolerance = 0.5;
+    private readonly Random random = new();
+
+    private const double Tolerance = 10;
 
     public GameState Etat { get; } = new();
 
     public void GenererNouvelleDistance()
     {
-        Etat.DistanceDemandee = _random.Next(1, 4);
+        Etat.DistanceDemandee = random.Next(50, 301);
         Etat.Resultat = "--";
         Etat.Message = "En attente...";
     }
@@ -19,7 +20,7 @@ public class GameService
     public void TraiterDistance(double distance)
     {
         Etat.DistanceActuelle = distance;
-        Etat.DistanceArrondie = (int)Math.Round(distance, MidpointRounding.AwayFromZero);
+        Etat.DistanceArrondie = (int)Math.Round(distance);
 
         if (distance < Etat.DistanceDemandee - Tolerance)
             Etat.Message = "RECULEZ";
@@ -29,15 +30,23 @@ public class GameService
             Etat.Message = "BONNE DISTANCE";
     }
 
+    public void TraiterLuminosite(int luminosite)
+    {
+        Etat.Luminosite = luminosite;
+    }
+
     public void TraiterResultat(string resultat)
     {
-        if (resultat == "HIT") resultat = "TOUCHÉ";
-        if (resultat == "MISS") resultat = "RATÉ";
+        if (resultat == "HIT")
+            resultat = "TOUCHÉ";
+
+        if (resultat == "MISS")
+            resultat = "RATÉ";
 
         Etat.Tirs++;
 
         if (resultat == "TOUCHÉ")
-            Etat.Score++;
+            Etat.Score += 100;
 
         Etat.Resultat = resultat;
     }
